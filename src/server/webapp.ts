@@ -1,43 +1,41 @@
-
-import { getItems } from "../list/getSheetList";
+import {
+	buildErrorResponse,
+	buildSuccessResponse,
+} from "./utils/buildResponses";
 
 /**
- * match response here https://github.com/gothinkster/realworld/tree/master/api
- * @param {*} result
+ * Handles POST requests for API calls
+ * @param e - The event object
+ * @returns A TextOutput object with the response in JSON format
  */
-function buildSuccessResponse(result: any) {
-    const output = JSON.stringify(result);
-
-    return ContentService.createTextOutput(output).setMimeType(ContentService.MimeType.JAVASCRIPT);
+function doPost(
+	e: GoogleAppsScript.Events.DoPost,
+): GoogleAppsScript.Content.TextOutput {
+	try {
+		const request = JSON.parse(JSON.stringify(e));
+		const response = {
+			...request,
+			processed: true,
+		};
+		return buildSuccessResponse(response);
+	} catch (error) {
+		return buildErrorResponse("Failed to process POST request", 500, {
+			error: String(error),
+		});
+	}
 }
 
-function buildErrorResponse(message: any, code: number) {
-    const output = JSON.stringify({
-        code,
-        errors: message,
-        message
-    });
-
-    return ContentService.createTextOutput(output).setMimeType(ContentService.MimeType.JAVASCRIPT);
+/**
+ * Handles GET requests to serve the web app UI
+ * @param e - The event object
+ * @returns An HtmlOutput object with the web app UI
+ */
+function doGet(
+	e: GoogleAppsScript.Events.DoGet,
+): GoogleAppsScript.HTML.HtmlOutput {
+	return HtmlService.createHtmlOutputFromFile("index").setXFrameOptionsMode(
+		HtmlService.XFrameOptionsMode.ALLOWALL,
+	);
 }
-
-const doPost = (e: any) => {
-    const request = JSON.parse(JSON.stringify(e));
-    let response = {};
-    response = request;
-    return buildSuccessResponse(response);
-};
-
-const doGet = (e: any) => {
-    let request = null;
-    try {
-        request = JSON.parse(JSON.stringify(e));
-    } catch (error) {
-        Logger.log("Debugging function directly.");
-    }
-    const response = request;
-    response.items = getItems();
-    return buildSuccessResponse(response);
-};
 
 export { doPost, doGet };

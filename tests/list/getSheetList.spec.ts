@@ -1,8 +1,8 @@
-import { getItems } from "../../src/list/getSheetList";
+import { getItems } from "../../src/services/listService";
 
 describe("getSheetList.ts", () => {
-    it("list", () => {
-        var items = getItems();
-        expect(items).toEqual(["test", "test3", "test5"]);
-    });
+	it("list", () => {
+		const items = getItems();
+		expect(items).toEqual(["test", "test3", "test5"]);
+	});
 });
